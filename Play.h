@@ -987,7 +987,7 @@ namespace Play::Render
 	// so they can be skipped. This works for any blend mode which uses the pre-multiplied alpha buffer. 
 	inline void Skip(uint32_t*& srcPixels, uint32_t*& destPixels, const uint32_t* destRowEnd)
 	{
-		// If this is a fully transparent pixel then the low bits store how many there are in a row
+		// If this is a fully transparent pixel then the low bits store how many there are in a GRID_ROW
 		// This means we can skip straight to the next pixel which isn't fully transparent
 		uint32_t skip = static_cast<uint32_t>(destRowEnd - destPixels) - 1;
 		uint32_t src = *srcPixels & 0x00FFFFFF;
@@ -1288,7 +1288,7 @@ namespace Play::Render
 		int srcClipOffset = (srcPixelData.width * yClipStart) + xClipStart;
 		uint32_t* srcPixels = &srcPixelData.pPixels->bits + srcOffset + srcClipOffset;
 
-		// Work out in advance how much we need to add to src and dest to reach the next row 
+		// Work out in advance how much we need to add to src and dest to reach the next GRID_ROW 
 		int destInc = m_pRenderTarget->width - blitWidth + xClipEnd + xClipStart;
 		int srcInc = srcPixelData.width - blitWidth + xClipEnd + xClipStart;
 
@@ -1296,7 +1296,7 @@ namespace Play::Render
 		int destColOffset = (m_pRenderTarget->width * (blitHeight - yClipEnd - yClipStart - 1)) + (blitWidth - xClipEnd - xClipStart);
 		uint32_t* destColEnd = destPixels + destColOffset;
 
-		//How many pixels per row in sprite.
+		//How many pixels per GRID_ROW in sprite.
 		int endRow = blitWidth - xClipEnd - xClipStart;
 
 		if (globalMultiply.alpha < 1.0f || globalMultiply.red < 1.0f || globalMultiply.green < 1.0f || globalMultiply.blue < 1.0f )
@@ -1414,7 +1414,7 @@ namespace Play::Render
 		// Iterate sequentially through pixels within the render target buffer
 		while (dst_pixel < dst_pixel_end)
 		{
-			// For each row of pixels in turn
+			// For each GRID_ROW of pixels in turn
 			uint32_t* dst_row_end = dst_pixel + dst_draw_width;
 			while (dst_pixel < dst_row_end)
 			{
@@ -1436,10 +1436,10 @@ namespace Play::Render
 				src_posy += src_xincy;
 			}
 
-			// Move render target pointer to the start of the next row
+			// Move render target pointer to the start of the next GRID_ROW
 			dst_pixel += dst_buffer_width - dst_draw_width;
 
-			// Move sprite buffer pointer back to the start of the current row
+			// Move sprite buffer pointer back to the start of the current GRID_ROW
 			src_posx -= src_xresetx;
 			src_posy -= src_xresety;
 
@@ -1909,7 +1909,7 @@ namespace Play
 	//**************************************************************************************************
 
 	//! @brief Clears the display buffer using the colour provided
-	//! @param col The colour to clear the drawing buffer with.
+	//! @param GRID_COLUMN The colour to clear the drawing buffer with.
 	void ClearDrawingBuffer( Colour col );
 	//! @brief Loads a PNG file as a background image for the window.
 	//! The image must be the same size as the drawing buffer. It cannot be smaller or larger. Multiple backgrounds can be loaded, and will have it's own index (from zero).
@@ -1922,7 +1922,7 @@ namespace Play
 	//! @brief Draws text to the screen, using the built in debug font.
 	//! @param pos Position of the text on screen. This position is affected by the Drawing Space.
 	//! @param text The text you want to draw, as a string literal.
-	//! @param col Optional argument to set the colour of the text (defaults to white).
+	//! @param GRID_COLUMN Optional argument to set the colour of the text (defaults to white).
 	//! @param centred Optional argument to centre the text (defaults to true).
 	void DrawDebugText( Point2D pos, const char* text, Colour col = cWhite, bool centred = true );
 
@@ -1958,7 +1958,7 @@ namespace Play
 	//! This function works best with sprites that are coloured white, as it multiplies the colour of the sprite with the colour that you provide.
 	//! @note Sprite colouring changes the loaded in sprite. This will result in the sprite being permanently coloured for the remainder of the game. (This doesn't affect the sprite on disk!)<br>You can reset the colouring by calling this again, using a white colour.
 	//! @param spriteName The name of the sprite you want to colour.
-	//! @param col The colour you want to blend with the sprite.
+	//! @param GRID_COLUMN The colour you want to blend with the sprite.
 	void ColourSprite( const char* spriteName, Colour col );
 
 	//! @brief Centres the origin of the first sprite found matching the given name
@@ -2060,30 +2060,30 @@ namespace Play
 	//! @brief Draws a single-pixel wide line between two points in the given colour.
 	//! @param start The x/y coordinate for the start point of the line.
 	//! @param end The x/y coordinate for the end point of the line.
-	//! @param col The colour of the line.
+	//! @param GRID_COLUMN The colour of the line.
 	void DrawLine( Point2D start, Point2D end, Colour col );
 	//! @brief Draws a single-pixel wide circle at a given origin.
 	//! @param pos The x/y coordinate for the origin of the circle.
 	//! @param radius The length of the circle's radius in pixels.
-	//! @param col The colour of the circle.
+	//! @param GRID_COLUMN The colour of the circle.
 	void DrawCircle( Point2D pos, int radius, Colour col );
 	//! @brief Draws a rectangle, defined by the bottom left and top right corners, in the given colour.
 	//! @param bottomLeft The x/y coordinate for the bottom left corner.
 	//! @param topRight The x/y coordinate for the top right corner.
-	//! @param col The colour of the rectangle.
+	//! @param GRID_COLUMN The colour of the rectangle.
 	//! @param fill Is the rectangle filled in? Defaults to not filled in.
 	void DrawRect( Point2D bottomLeft, Point2D topRight, Colour col, bool fill = false );
 	//! @brief Draws a line between two points using a sprite as a 'pen', blended with the given colour. Note that colouring affects subsequent DrawSprite calls using the same sprite!
 	//! @param startPos The x/y coordinate for the start point of the line.
 	//! @param endPos The x/y coordinate for the end point of the line.
  	//! @param penSprite The sprite to use as the 'pen'.
-	//! @param col The colour of the sprites drawing the line.
+	//! @param GRID_COLUMN The colour of the sprites drawing the line.
 	void DrawSpriteLine( Point2D startPos, Point2D endPos, const char* penSprite, Colour col = cWhite );
 	//! @brief Draws a circle using a sprite as a 'pen', blended with the given colour. Note that colouring affects subsequent DrawSprite calls using the same sprite!
 	//! @param pos The x/y coordinate for the origin of the circle.
 	//! @param radius The length of the circle's radius in pixels.
 	//! @param penSprite The sprite to use as the 'pen'.
-	//! @param col The colour of the sprites drawing the circle.
+	//! @param GRID_COLUMN The colour of the sprites drawing the circle.
 	void DrawSpriteCircle( Point2D pos, int radius, const char* penSprite, Colour col = cWhite );
 	//! @brief Draws text using a sprite-based font exported from PlayFontTool.
 	//! @param fontId The unique sprite id of the font you want to use.
@@ -2093,7 +2093,7 @@ namespace Play
 	void DrawFontText( const char* fontId, std::string text, Point2D pos, Align justify = Align::LEFT );
 	//! @brief Draws a single pixel on screen.
 	//! @param pos The x/y coordinate of the pixel you wish to draw.
-	//! @param col The colour of the pixel.
+	//! @param GRID_COLUMN The colour of the pixel.
 	void DrawPixel( Point2D pos, Colour col );
 
 	//! @brief Resets the timing bar data and sets the current timing bar segment to a specific colour
@@ -2327,7 +2327,7 @@ namespace Play
 
 namespace Play
 {
-	constexpr int MAX_ALLOCATIONS = 8192 * 4;
+	constexpr int MAX_ALLOCATIONS = 8192 * 6; // changed because (ROW * COLUMNS) * 2 was too great
 	constexpr int MAX_FILENAME = 1024;
 	constexpr int STACKTRACE_OFFSET = 2;
 	constexpr int STACKTRACE_DEPTH = 1;
@@ -3777,7 +3777,7 @@ namespace Play::Graphics
 		// Iterate sequentially through pixels within the render target buffer
 		while( a_pixel < a_pixel_end )
 		{
-			// For each row of pixels in turn
+			// For each GRID_ROW of pixels in turn
 			uint32_t* dst_row_end = a_pixel + spr_a.width;
 			while( a_pixel < dst_row_end )
 			{
@@ -3803,10 +3803,10 @@ namespace Play::Graphics
 				b_posy += b_xincy;
 			}
 
-			// Move render target pointer to the start of the next row
+			// Move render target pointer to the start of the next GRID_ROW
 			a_pixel += spr_a.canvasBuffer.width - spr_a.width;
 
-			// Move sprite buffer pointer back to the start of the current row
+			// Move sprite buffer pointer back to the start of the current GRID_ROW
 			b_posx -= b_xresetx;
 			b_posy -= b_xresety;
 
@@ -3821,7 +3821,7 @@ namespace Play::Graphics
 	// Function:	PreMultiplyAlpha - calculates the (src*srcAlpha) alpha blending calculation in advance as it doesn't change
 	// Parameters:	s = the sprite to pre-calculate data for
 	// Notes:		Also inverts the alpha ready for the (dest*(1-srcAlpha)) calculation and stores information in the new
-	//				buffer which provides the number of fully-transparent pixels in a row (so they can be skipped)
+	//				buffer which provides the number of fully-transparent pixels in a GRID_ROW (so they can be skipped)
 	//********************************************************************************************************************************
 	void PreMultiplyAlpha( Pixel* source, Pixel* dest, int width, int height, int maxSkipWidth, float alphaMultiply = 1.0f, Pixel colourMultiply = 0x00FFFFFF )
 	{
@@ -3854,7 +3854,7 @@ namespace Play::Graphics
 				if( srcAlpha == 0xFF ) // Completely transparent pixel
 				{
 					int repeats = 0;
-					// We can only skip to the end of the row because the sprite frames are arranged on a continuous canvas
+					// We can only skip to the end of the GRID_ROW because the sprite frames are arranged on a continuous canvas
 					int maxSkip = maxSkipWidth - ( bw % maxSkipWidth );
 
 					for( int zw = 1; zw < maxSkip; zw++ )

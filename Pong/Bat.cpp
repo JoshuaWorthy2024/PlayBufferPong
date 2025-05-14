@@ -21,11 +21,6 @@ void Bat::Update(const float& elapsedTime)
         if (Play::KeyDown(Play::KEY_W)) m_Position.y += PLAYER_SPEED * elapsedTime;
         if (Play::KeyDown(Play::KEY_S)) m_Position.y -= PLAYER_SPEED * elapsedTime;
     }
-    else if (m_PlayerID == 2)
-    {
-        if (Play::KeyDown(Play::KEY_UP)) m_Position.y += PLAYER_SPEED * elapsedTime;
-        if (Play::KeyDown(Play::KEY_DOWN)) m_Position.y -= PLAYER_SPEED * elapsedTime;
-    }
 
     // Adjust position
     float halfHeight = BAT_HEIGHT / 2.0f;

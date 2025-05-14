@@ -6,7 +6,6 @@
 #include "Play.h"
 
 // Globals
-Game gameInstance;
 
 void MainGameEntry( PLAY_IGNORE_COMMAND_LINE )
 {
@@ -14,7 +13,7 @@ void MainGameEntry( PLAY_IGNORE_COMMAND_LINE )
 	Play::CreateManager(DISPLAY_WIDTH, DISPLAY_HEIGHT, DISPLAY_SCALE);
 
 	// Initialise the game instance
-	gameInstance.Initialise();
+	Game::GetInstance().Initialise();
 }
 
 bool MainGameUpdate(float elapsedTime )
@@ -23,8 +22,8 @@ bool MainGameUpdate(float elapsedTime )
 	Play::ClearDrawingBuffer( Play::cBlack );
 
 	// Update and draw the game
-	gameInstance.Update(elapsedTime);
-	gameInstance.Draw();
+	Game::GetInstance().Update(elapsedTime);
+	Game::GetInstance().Draw();
 
 	// Present the draw buffer to the screen
 	Play::PresentDrawingBuffer();	
